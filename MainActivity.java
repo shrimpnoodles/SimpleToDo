@@ -1,117 +1,96 @@
-<html>
-<head>
-<title>MainActivity.java</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<style type="text/css">
-.s0 { color: #cc7832;}
-.s1 { color: #a9b7c6;}
-.s2 { color: #6a8759;}
-.s3 { color: #808080;}
-.s4 { color: #6897bb;}
-</style>
-</head>
-<body bgcolor="#2b2b2b">
-<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
-<tr><td><center>
-<font face="Arial, Helvetica" color="#000000">
-MainActivity.java</font>
-</center></td></tr></table>
-<pre><span class="s0">package </span><span class="s1">com.example.simpletodo</span><span class="s0">;</span>
+package com.example.simpletodo;
 
-<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.LinearLayoutManager</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">android.util.Log</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">android.widget.EditText</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-<span class="s0">import </span><span class="s1">org.apache.commons.io.FileUtils</span><span class="s0">;</span>
+import org.apache.commons.io.FileUtils;
 
-<span class="s0">import </span><span class="s1">java.io.File</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">java.io.IOException</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">java.nio.charset.Charset</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
-<span class="s0">import </span><span class="s1">java.util.List</span><span class="s0">;</span>
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
-<span class="s0">public class </span><span class="s1">MainActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+public class MainActivity extends AppCompatActivity {
 
-    <span class="s1">List&lt;String&gt; items</span><span class="s0">;</span>
+    List<String> items;
 
-    <span class="s1">Button btnadd</span><span class="s0">;</span>
-    <span class="s1">EditText etitem</span><span class="s0">;</span>
-    <span class="s1">RecyclerView rvItems</span><span class="s0">;</span>
-    <span class="s1">ItemsAdapter itemsAdapter</span><span class="s0">;</span>
+    Button btnadd;
+    EditText etitem;
+    RecyclerView rvItems;
+    ItemsAdapter itemsAdapter;
 
-    <span class="s1">@Override</span>
-    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
-        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
-        <span class="s1">setContentView(R.layout.activity_main)</span><span class="s0">;</span>
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        <span class="s1">btnadd = findViewById(R.id.btnadd)</span><span class="s0">;</span>
-        <span class="s1">etitem = findViewById(R.id.etitem)</span><span class="s0">;</span>
-        <span class="s1">rvItems = findViewById(R.id.rvItems)</span><span class="s0">;</span>
+        btnadd = findViewById(R.id.btnadd);
+        etitem = findViewById(R.id.etitem);
+        rvItems = findViewById(R.id.rvItems);
 
-        <span class="s1">loadItems()</span><span class="s0">;</span>
+        loadItems();
 
 
-        <span class="s1">ItemsAdapter.OnLongClickListener onLongClickListener = </span><span class="s0">new </span><span class="s1">ItemsAdapter.OnLongClickListener() {</span>
-            <span class="s1">@Override</span>
-            <span class="s0">public void </span><span class="s1">onItemLongClicked(</span><span class="s0">int </span><span class="s1">position) {</span>
-                <span class="s1">items.remove(position)</span><span class="s0">;</span>
+        ItemsAdapter.OnLongClickListener onLongClickListener = new ItemsAdapter.OnLongClickListener() {
+            @Override
+            public void onItemLongClicked(int position) {
+                items.remove(position);
 
-                <span class="s1">itemsAdapter.notifyItemRemoved(position)</span><span class="s0">;</span>
-                <span class="s1">Toast.makeText(getApplicationContext()</span><span class="s0">, </span><span class="s2">&quot;Item removed&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
-                <span class="s1">saveItems()</span><span class="s0">;</span>
-            <span class="s1">}</span>
-        <span class="s1">}</span><span class="s0">;</span>
-        <span class="s1">itemsAdapter = </span><span class="s0">new </span><span class="s1">ItemsAdapter(items</span><span class="s0">, </span><span class="s1">onLongClickListener)</span><span class="s0">;</span>
+                itemsAdapter.notifyItemRemoved(position);
+                Toast.makeText(getApplicationContext(), "Item removed", Toast.LENGTH_SHORT).show();
+                saveItems();
+            }
+        };
+        itemsAdapter = new ItemsAdapter(items, onLongClickListener);
 
-        <span class="s3">//final ItemsAdapter itemsAdapter = new ItemsAdapter(items, onLongClickListener);</span>
-        <span class="s1">rvItems.setAdapter(itemsAdapter)</span><span class="s0">;</span>
-        <span class="s1">rvItems.setLayoutManager(</span><span class="s0">new </span><span class="s1">LinearLayoutManager(</span><span class="s0">this</span><span class="s1">))</span><span class="s0">;</span>
+        //final ItemsAdapter itemsAdapter = new ItemsAdapter(items, onLongClickListener);
+        rvItems.setAdapter(itemsAdapter);
+        rvItems.setLayoutManager(new LinearLayoutManager(this));
 
-        <span class="s1">btnadd.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
-            <span class="s1">@Override</span>
-            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
-                <span class="s1">String todoItem = etitem.getText().toString()</span><span class="s0">;</span>
-                <span class="s1">items.add(todoItem)</span><span class="s0">;</span>
-                <span class="s1">itemsAdapter.notifyItemInserted(items.size() - </span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
-                <span class="s1">etitem.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        btnadd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String todoItem = etitem.getText().toString();
+                items.add(todoItem);
+                itemsAdapter.notifyItemInserted(items.size() - 1);
+                etitem.setText("");
 
-                <span class="s1">Toast.makeText(getApplicationContext()</span><span class="s0">, </span><span class="s2">&quot;Item was added&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
-                <span class="s1">saveItems()</span><span class="s0">;</span>
-            <span class="s1">}</span>
-        <span class="s1">})</span><span class="s0">;</span>
+                Toast.makeText(getApplicationContext(), "Item was added", Toast.LENGTH_SHORT).show();
+                saveItems();
+            }
+        });
 
-    <span class="s1">}</span>
-        <span class="s0">private </span><span class="s1">File getDataFile(){</span>
-            <span class="s0">return new </span><span class="s1">File(getFilesDir()</span><span class="s0">, </span><span class="s2">&quot;data.txt&quot;</span><span class="s1">)</span><span class="s0">;</span>
-        <span class="s1">}</span>
-        <span class="s3">//load items by reading line of data txt</span>
-        <span class="s0">private void </span><span class="s1">loadItems(){</span>
-            <span class="s0">try </span><span class="s1">{</span>
-                <span class="s1">items = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;(FileUtils.readLines(getDataFile()</span><span class="s0">, </span><span class="s1">Charset.defaultCharset()))</span><span class="s0">;</span>
-            <span class="s1">} </span><span class="s0">catch </span><span class="s1">(IOException e) {</span>
-                <span class="s1">Log.e(</span><span class="s2">&quot;MainActivity&quot;</span><span class="s0">, </span><span class="s2">&quot;Error reading items&quot;</span><span class="s0">, </span><span class="s1">e)</span><span class="s0">;</span>
-                <span class="s1">items = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
-            <span class="s1">}</span>
-        <span class="s1">}</span>
+    }
+        private File getDataFile(){
+            return new File(getFilesDir(), "data.txt");
+        }
+        //load items by reading line of data txt
+        private void loadItems(){
+            try {
+                items = new ArrayList<>(FileUtils.readLines(getDataFile(), Charset.defaultCharset()));
+            } catch (IOException e) {
+                Log.e("MainActivity", "Error reading items", e);
+                items = new ArrayList<>();
+            }
+        }
 
-        <span class="s3">//saves items by writing them into data file</span>
-        <span class="s0">private void </span><span class="s1">saveItems(){</span>
-            <span class="s0">try </span><span class="s1">{</span>
-                <span class="s1">FileUtils.writeLines(getDataFile()</span><span class="s0">, </span><span class="s1">items)</span><span class="s0">;</span>
-            <span class="s1">} </span><span class="s0">catch </span><span class="s1">(IOException e) {</span>
-                <span class="s1">Log.e(</span><span class="s2">&quot;MainActivity&quot;</span><span class="s0">, </span><span class="s2">&quot;Error writing items&quot;</span><span class="s0">, </span><span class="s1">e)</span><span class="s0">;</span>
+        //saves items by writing them into data file
+        private void saveItems(){
+            try {
+                FileUtils.writeLines(getDataFile(), items);
+            } catch (IOException e) {
+                Log.e("MainActivity", "Error writing items", e);
 
-            <span class="s1">}</span>
-        <span class="s1">}</span>
+            }
+        }
 
-    <span class="s1">}</span>
-</pre>
-</body>
-</html>
+    }
